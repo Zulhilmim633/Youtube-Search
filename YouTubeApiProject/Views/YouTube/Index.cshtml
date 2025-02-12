@@ -1,0 +1,264 @@
+﻿@model List<dynamic>
+@{
+    ViewData["Title"] = "YouTube";
+}
+
+<script>
+    window.addEventListener("load", function()  {
+        var path = window.location.href;
+        var url = new URL(path);
+        url.searchParams.delete("token")
+        url.searchParams.delete("pg")
+        let search_q = url.searchParams.get("query")
+        let sp = url.searchParams.get("sp")
+        history.pushState({query: search_q, sp: sp},"",url)
+    })
+</script>
+
+<style>
+    .bt-ch{
+    cursor: pointer;
+    z-index: 50;
+    }
+    .bt-ch:hover{
+    opacity: 0.45;
+    }
+    .conts:hover{
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+<div class="mx-5 text-center mt-3">
+    <h2>Search YouTube Videos</h2>
+
+    <form class="d-flex flex-column align-items-center needs-validation" novalidate>
+        <div class="input-group">
+            <button type="submit" class="input-group-text border-0" id="search-addon">
+                <i class="fas fa-search"></i>
+            </button>
+            <input name="query" type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" required />
+            <button type="button" class="input-group-text border-0 rounded-end gap-1" id="search-addon" data-bs-toggle="modal" data-bs-target="#filtermodal">
+                Filters
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.5 1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4H1.5a.5.5 0 0 1 0-1H10V1.5a.5.5 0 0 1 .5-.5M12 3.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m-6.5 2A.5.5 0 0 1 6 6v1.5h8.5a.5.5 0 0 1 0 1H6V10a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5M1 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 1 8m9.5 2a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V13H1.5a.5.5 0 0 1 0-1H10v-1.5a.5.5 0 0 1 .5-.5m1.5 2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5" />
+                </svg>
+            </button>
+            <div class="modal" tabindex="-1" id="filtermodal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Search filters</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body d-flex">
+                            <div class="d-flex flex-column form-check" style="max-width:fit-content;">
+                                <h6>UPLOAD DATE</h6>
+                                <hr />
+                                <input name="from" type="radio" class="btn-check" id="date-h" value="h">
+                                <label class="btn " for="date-h">Last hour</label>
+                                <input name="from" type="radio" class="btn-check" id="date-t" value="t">
+                                <label class="btn" for="date-t">Today</label>
+                                <input name="from" type="radio" class="btn-check" id="date-w" value="w">
+                                <label class="btn" for="date-w">This week</label>
+                                <input name="from" type="radio" class="btn-check" id="date-m" value="m">
+                                <label class="btn" for="date-m">This month</label>
+                                <input name="from" type="radio" class="btn-check" id="date-y" value="y">
+                                <label class="btn" for="date-y">This year</label>
+                                <input name="from" type="radio" class="btn-check" id="date-a" value="D" checked>
+                                <label class="btn" for="date-a">All</label>
+                            </div>
+                            <div class="d-flex flex-column form-check" style="max-width:fit-content;">
+                                <h6>DURATION</h6>
+                                <hr />
+                                <input name="du" type="radio" class="btn-check" id="du-short" value="s">
+                                <label class="btn" for="du-short">Under 4 minutes</label>
+                                <input name="du" type="radio" class="btn-check" id="du-medium" value="m">
+                                <label class="btn" for="du-medium">4 - 20 minutes</label>
+                                <input name="du" type="radio" class="btn-check" id="du-long" value="l">
+                                <label class="btn" for="du-long">Over 20 minutes</label>
+                                <input name="du" type="radio" class="btn-check" id="du-any" value="D" checked>
+                                <label class="btn" for="du-any">All</label>
+                            </div>
+                            <div class="d-flex flex-column form-check" style="max-width:fit-content;">
+                                <h6>SORT BY</h6>
+                                <hr />
+                                <input name="order" type="radio" class="btn-check" id="o-re" value="D" checked>
+                                <label class="btn " for="o-re">Relevance</label>
+                                <input name="order" type="radio" class="btn-check" id="o-d" value="d">
+                                <label class="btn" for="o-d">Upload date</label>
+                                <input name="order" type="radio" class="btn-check" id="o-t" value="t">
+                                <label class="btn" for="o-t">Title</label>
+                                <input name="order" type="radio" class="btn-check" id="o-v" value="v">
+                                <label class="btn" for="o-v">View count</label>
+                                <input name="order" type="radio" class="btn-check" id="o-ra" value="r">
+                                <label class="btn" for="o-ra">Rating</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    @if (Model.Count == 1)
+    {
+        <h3 class="text-center mt-2">No result found</h3>
+    }
+    else
+    {
+        <div class="d-flex flex-column mb-5 mt-3 w-100">
+            @foreach (var video in Model)
+            {
+                if (video.ResType == "youtube#video")
+                {
+                    <a class="conts p-3 w-100" href="https://www.youtube.com/watch?v=@video.VideoId" style="text-decoration: none;" target="_blank">
+                        <div class="d-flex flex-row">
+                            <img class="rounded-4" src="@video.ThumbnailUrl" alt="@video.Title" />
+                            <div class="d-flex flex-column ms-3">
+                                <h3>@video.Title</h3>
+                                <p>@video.GetPublish()</p>
+                                <p class="bt-ch" onclick="window.open('https://www.youtube.com/channel/@video.ChannelId','_blank');"
+                                   title="@video.ChannelTitle">
+                                    @video.ChannelTitle
+                                </p>
+                                <p>@video.Description</p>
+                            </div>
+                        </div>
+                    </a>
+                }
+                else if (video.ResType == "youtube#channel")
+                {
+                    <a class="conts p-3 w-100" href="https://www.youtube.com/channel/@video.ChannelId" style="text-decoration: none;" target="_blank">
+                        <div class="d-flex align-items-center">
+                            <img class="rounded-circle" src="@video.ThumbnailUrl" alt="@video.Title" />
+                            <h3 class="ms-3">@video.Title</h3>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+    }
+
+    @if (Model.Count != 1)
+    {
+        <div>
+            <div class="d-flex justify-content-center mb-5 gap-3 align-items-center">
+                <button type="button" class="input-group-text border-0" onclick="prevPage()" @(Model[0].currentPage == 1 ? "disabled style=opacity:0;":"")>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-square" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm11.5 5.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+                    </svg>
+                </button>
+                <h4 @(Model.Count < 11 && Model[0].currentPage == 1 ? "style=opacity:0;" : "")>@Model[0].currentPage</h4>
+                <button type="button" class="input-group-text border-0" onclick="nextPage()" @(Model.Count < 11 ? "disabled style=opacity:0;" : "")>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-square" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <script>
+            function nextPage(){
+                let uri = new URL(window.location.href);
+                uri.searchParams.set("token","@Model[0].nextPage");
+                uri.searchParams.set("pg","@(Model[0].currentPage + 1)");
+                return window.location.href = uri.href
+            }
+            function prevPage(){
+                let uri = new URL(window.location.href);
+                uri.searchParams.set("token","@Model[0].previousPage");
+                uri.searchParams.set("pg","@(Model[0].currentPage - 1)");
+                return window.location.href = uri.href
+            }
+        </script>
+    }
+}
+
+
+<script>
+    function textToHex(text) {
+        return Array.from(text)
+            .map(char => char.charCodeAt(0).toString(16).padStart(2, "0"))
+            .join("");
+    }
+
+    function hexToText(hex) {
+        const bytes = new Uint8Array(hex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+        return new TextDecoder().decode(bytes);
+    }
+
+    var form = document.forms[0];
+
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+
+        let f = form.from.value;
+        let d = form.du.value;
+        let o = form.order.value;
+
+        let text = textToHex(`${f},${d},${o}`)
+        const params = new URLSearchParams({
+            query: form.query.value,
+            sp: text
+        })
+        window.location.href = "/youtube/Search?" + params.toString();
+        form.classList.add('was-validated');
+    })
+
+    var path = window.location.href;
+    var url = new URL(path);
+    if (url.pathname.toLowerCase() == "/youtube/search" && url.searchParams.get("query") != null)
+    {
+        let search_q = url.searchParams.get("query")
+
+        form.query.value = search_q
+
+        let filter = hexToText(url.searchParams.get("sp"))
+        let [f,d,o] = filter.split(",")
+
+        if (f == "h"){
+            form.querySelector("#date-h").checked = true;
+        }
+        else if (f == "t"){
+            form.querySelector("#date-t").checked = true;
+        }
+        else if (f == "w"){
+            form.querySelector("#date-w").checked = true;
+        }
+        else if (f == "m"){
+            form.querySelector("#date-m").checked = true;
+        }
+        else if (f == "y"){
+            form.querySelector("#date-y").checked = true;
+        }
+
+        if (d == "s"){
+            form.querySelector("#du-short").checked = true;
+        }
+        else if (d == "m"){
+            form.querySelector("#du-medium").checked = true;
+        }
+        else if (d == "l"){
+            form.querySelector("#du-long").checked = true;
+        }
+
+        if (o == "d"){
+            form.querySelector("#o-d").checked = true;
+        }
+        else if (o == "v"){
+            form.querySelector("#o-v").checked = true;
+        }
+        else if (o == "r"){
+            form.querySelector("#o-ra").checked = true;
+        }
+        else if (o == "t"){
+            form.querySelector("#o-t").checked = true;
+        }
+    }
+</script>
