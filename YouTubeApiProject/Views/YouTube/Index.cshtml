@@ -1,6 +1,33 @@
 ﻿@model List<dynamic>
 @{
     ViewData["Title"] = "YouTube";
+    var forms_data = new 
+    { 
+        date = new Dictionary<string, object>
+        {
+            {"date-h", new { value = "h",text = "Last hour"} },
+            {"date-t", new { value = "t",text = "Today"} },
+            {"date-w", new { value = "w",text = "This week"} },
+            {"date-m", new { value = "m",text = "This month"} },
+            {"date-y", new { value = "y",text = "This year"} },
+            {"date-a", new { value = "D",text = "All"} }
+        },
+        duration = new Dictionary<string, object>
+        {
+            {"du-short", new {value = "s", text = "Under 4 minutes" } },
+            {"du-medium", new {value = "m", text = "4 - 20 minutes" } },
+            {"du-long", new {value = "l", text = "Over 20 minutes" } },
+            {"du-any", new {value = "D", text = "All" } }
+        },
+        sort = new Dictionary<string, object>
+        {
+            {"o-re", new {value = "D", text = "Relevance"} },
+            {"o-d", new {value = "d", text = "Upload date"} },
+            {"o-t", new {value = "t", text = "Title"} },
+            {"o-v", new {value = "v", text = "View count"} },
+            {"o-ra", new {value = "r", text = "Rating"} }
+        }
+    };
 }
 
 <script>
@@ -36,7 +63,8 @@
             <button type="submit" class="input-group-text border-0" id="search-addon">
                 <i class="fas fa-search"></i>
             </button>
-            <input name="query" type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" required />
+            <input name="query" type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" required 
+            value="@(Model != null && Model.Any() ? Model[0].search : "")" />
             <button type="button" class="input-group-text border-0 rounded-end gap-1" id="search-addon" data-bs-toggle="modal" data-bs-target="#filtermodal">
                 Filters
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders2" viewBox="0 0 16 16">
@@ -54,44 +82,41 @@
                             <div class="d-flex flex-column form-check" style="max-width:fit-content;">
                                 <h6>UPLOAD DATE</h6>
                                 <hr />
-                                <input name="from" type="radio" class="btn-check" id="date-h" value="h">
-                                <label class="btn " for="date-h">Last hour</label>
-                                <input name="from" type="radio" class="btn-check" id="date-t" value="t">
-                                <label class="btn" for="date-t">Today</label>
-                                <input name="from" type="radio" class="btn-check" id="date-w" value="w">
-                                <label class="btn" for="date-w">This week</label>
-                                <input name="from" type="radio" class="btn-check" id="date-m" value="m">
-                                <label class="btn" for="date-m">This month</label>
-                                <input name="from" type="radio" class="btn-check" id="date-y" value="y">
-                                <label class="btn" for="date-y">This year</label>
-                                <input name="from" type="radio" class="btn-check" id="date-a" value="D" checked>
-                                <label class="btn" for="date-a">All</label>
+                                @foreach(var item in forms_data.date)
+                                {
+                                    var data = item.Value as dynamic;
+                                    <input name="from" type="radio" class="btn-check" id="@item.Key" value="@data.value" 
+                                    @(Model != null && Model.Any() ? 
+                                    (data.value == Model[0].filter[0] ? "checked" : "") :
+                                    (data.value == "D" ? "checked" : ""))>
+                                    <label class="btn " for="@item.Key">@data.text</label>
+                                }
                             </div>
                             <div class="d-flex flex-column form-check" style="max-width:fit-content;">
                                 <h6>DURATION</h6>
                                 <hr />
-                                <input name="du" type="radio" class="btn-check" id="du-short" value="s">
-                                <label class="btn" for="du-short">Under 4 minutes</label>
-                                <input name="du" type="radio" class="btn-check" id="du-medium" value="m">
-                                <label class="btn" for="du-medium">4 - 20 minutes</label>
-                                <input name="du" type="radio" class="btn-check" id="du-long" value="l">
-                                <label class="btn" for="du-long">Over 20 minutes</label>
-                                <input name="du" type="radio" class="btn-check" id="du-any" value="D" checked>
-                                <label class="btn" for="du-any">All</label>
+                                @foreach(var item in forms_data.duration)
+                                {
+                                    var data = item.Value as dynamic;
+                                    <input name="du" type="radio" class="btn-check" id="@item.Key" value="@data.value" 
+                                    @(Model != null && Model.Any() ? 
+                                    (data.value == Model[0].filter[1] ? "checked" : "") :
+                                    (data.value == "D" ? "checked" : ""))>
+                                    <label class="btn " for="@item.Key">@data.text</label>
+                                }
                             </div>
                             <div class="d-flex flex-column form-check" style="max-width:fit-content;">
                                 <h6>SORT BY</h6>
                                 <hr />
-                                <input name="order" type="radio" class="btn-check" id="o-re" value="D" checked>
-                                <label class="btn " for="o-re">Relevance</label>
-                                <input name="order" type="radio" class="btn-check" id="o-d" value="d">
-                                <label class="btn" for="o-d">Upload date</label>
-                                <input name="order" type="radio" class="btn-check" id="o-t" value="t">
-                                <label class="btn" for="o-t">Title</label>
-                                <input name="order" type="radio" class="btn-check" id="o-v" value="v">
-                                <label class="btn" for="o-v">View count</label>
-                                <input name="order" type="radio" class="btn-check" id="o-ra" value="r">
-                                <label class="btn" for="o-ra">Rating</label>
+                                @foreach (var item in forms_data.sort)
+                                {
+                                    var data = item.Value as dynamic;
+                                    <input name="order" type="radio" class="btn-check" id="@item.Key" value="@data.value" 
+                                    @(Model != null && Model.Any() ? 
+                                    (data.value == Model[0].filter[2] ? "checked" : "") :
+                                    (data.value == "D" ? "checked" : ""))>
+                                    <label class="btn " for="@item.Key">@data.text</label>
+                                }
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -188,77 +213,25 @@
             .join("");
     }
 
-    function hexToText(hex) {
-        const bytes = new Uint8Array(hex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
-        return new TextDecoder().decode(bytes);
-    }
-
-    var form = document.forms[0];
+    const form = document.querySelector('.needs-validation')
 
     form.addEventListener('submit', event => {
         event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+
+        let query = form.query.value;
+        if (form.query.value == "") return
 
         let f = form.from.value;
         let d = form.du.value;
         let o = form.order.value;
 
-        let text = textToHex(`${f},${d},${o}`)
+        let sp = textToHex(`${f},${d},${o}`)
         const params = new URLSearchParams({
-            query: form.query.value,
-            sp: text
+            query,
+            sp
         })
         window.location.href = "/youtube/Search?" + params.toString();
-        form.classList.add('was-validated');
-    })
-
-    var path = window.location.href;
-    var url = new URL(path);
-    if (url.pathname.toLowerCase() == "/youtube/search" && url.searchParams.get("query") != null)
-    {
-        let search_q = url.searchParams.get("query")
-
-        form.query.value = search_q
-
-        let filter = hexToText(url.searchParams.get("sp"))
-        let [f,d,o] = filter.split(",")
-
-        if (f == "h"){
-            form.querySelector("#date-h").checked = true;
-        }
-        else if (f == "t"){
-            form.querySelector("#date-t").checked = true;
-        }
-        else if (f == "w"){
-            form.querySelector("#date-w").checked = true;
-        }
-        else if (f == "m"){
-            form.querySelector("#date-m").checked = true;
-        }
-        else if (f == "y"){
-            form.querySelector("#date-y").checked = true;
-        }
-
-        if (d == "s"){
-            form.querySelector("#du-short").checked = true;
-        }
-        else if (d == "m"){
-            form.querySelector("#du-medium").checked = true;
-        }
-        else if (d == "l"){
-            form.querySelector("#du-long").checked = true;
-        }
-
-        if (o == "d"){
-            form.querySelector("#o-d").checked = true;
-        }
-        else if (o == "v"){
-            form.querySelector("#o-v").checked = true;
-        }
-        else if (o == "r"){
-            form.querySelector("#o-ra").checked = true;
-        }
-        else if (o == "t"){
-            form.querySelector("#o-t").checked = true;
-        }
-    }
+    },false)
 </script>

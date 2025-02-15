@@ -85,7 +85,9 @@ namespace YouTubeApiProject.Services
                 nextPage = searchResponse.NextPageToken,
                 previousPage = searchResponse.PrevPageToken,
                 resultPerPage = result,
-                currentPage = page
+                currentPage = page,
+                search = query,
+                filter = [u, d, o]
             });
 
             return videos;

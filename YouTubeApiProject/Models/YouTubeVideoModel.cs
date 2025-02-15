@@ -69,5 +69,7 @@ namespace YouTubeApiProject.Models
         public string previousPage { get; set; }
         public int? resultPerPage { get; set; }
         public int currentPage { get; set; }
+        public string search { get; set; }
+        public string[] filter { get; set; }
     }
 }
